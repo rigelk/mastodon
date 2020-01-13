@@ -124,6 +124,26 @@ RSpec.describe ActivityPub::FetchRemoteStatusService, type: :service do
       end
     end
 
+    context 'with Corpus object' do
+      let(:object) do
+        {
+          '@context': 'https://olki.loria.fr/scifed',
+          id: "https://#{valid_domain}/@foo/1234",
+          type: 'Corpus',
+          name: "Débats parlementaires sur l'Europe à l'Assemblée nationale (2002-2012)",
+          attributedTo: ActivityPub::TagManager.instance.uri_for(sender)
+        }
+      end
+
+      it 'creates status' do
+        status = sender.statuses.first
+
+        expect(status).to_not be_nil
+        expect(status.url).to eq "https://#{valid_domain}/@foo/1234"
+        expect(strip_tags(status.text)).to eq "Débats parlementaires sur l'Europe à l'Assemblée nationale (2002-2012) https://#{valid_domain}/@foo/1234"
+      end
+    end
+
     context 'with wrong id' do
       let(:note) do
         {
